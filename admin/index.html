@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Kigo xpress</title>
+<title>Kigo xpress V5 - Cotizacion</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:'Inter',sans-serif}
@@ -64,6 +64,8 @@ body{background:#f8f9fb;color:#0a0a0a;overflow-x:hidden;padding-bottom:90px}
 .form-section-title{font-weight:800;font-size:8px;margin-bottom:8px;letter-spacing:1px;text-transform:uppercase;color:#111}
 .manual-price{background:#fffbeb;border:1.5px solid #fde68a;border-radius:10px;padding:8px;margin-top:10px}
 .tiempo-box{background:#f3f4f6;border:1px solid #e5e7eb;border-radius:10px;padding:8px;margin-top:10px}
+.btn-cot-cli{flex:1;height:42px;background:#fff;border:1.5px solid #86efac;color:#10b981;border-radius:12px;font-weight:800;font-size:7px;display:flex;align-items:center;justify-content:center;gap:4px;box-shadow:0 0 12px rgba(16,185,129,.18)}
+.btn-cot-repa{flex:1;height:42px;background:#0a0a0a;border:1.5px solid #0a0a0a;color:#fff;border-radius:12px;font-weight:800;font-size:7px;display:flex;align-items:center;justify-content:center;gap:4px}
 </style>
 </head>
 <body>
@@ -116,7 +118,12 @@ body{background:#f8f9fb;color:#0a0a0a;overflow-x:hidden;padding-bottom:90px}
 <div class="tiempo-box"><div class="label" style="margin:0 0 6px">Tiempo de recogida</div><div style="display:flex;gap:4px"><button onclick="setTiempoRecogida(10)" id="t10" class="tab-cobro" style="flex:1">10</button><button onclick="setTiempoRecogida(20)" id="t20" class="tab-cobro active" style="flex:1;background:#0a0a0a;color:#fff">20</button><button onclick="setTiempoRecogida(30)" id="t30" class="tab-cobro" style="flex:1">30</button><button onclick="setTiempoRecogida(45)" id="t45" class="tab-cobro" style="flex:1">45</button><button onclick="setTiempoRecogida(60)" id="t60" class="tab-cobro" style="flex:1">60</button></div><div class="wrap" style="margin-top:6px"><input type="number" id="tiempoRecogidaInput" value="20"></div></div>
 <div class="manual-price"><div class="label">Precio manual del servicio (opcional)</div><div class="wrap" style="background:#fff"><input type="number" id="precioManualAliadoRecoger" placeholder="Ej: 50"><button class="clear-x" onclick="document.getElementById('precioManualAliadoRecoger').value=''">x</button></div></div>
 </div>
-<button onclick="confirmarPedido()" style="width:100%;height:52px;margin-top:12px;background:#ef4444;color:#fff;border:none;border-radius:12px;font-weight:800;display:flex;align-items:center;justify-content:center;gap:6px">
+<!-- NUEVOS BOTONES COTIZACION ARRIBA DE CONFIRMAR -->
+<div style="display:flex;gap:6px;margin-top:12px">
+<button onclick="compartirCotizacionCliente()" class="btn-cot-cli">📤 COMPARTIR COTIZACION AL CLIENTE</button>
+<button onclick="compartirCotizacionRepa()" class="btn-cot-repa">🏍️ COMPARTIR COTIZACION AL REPARTIDOR</button>
+</div>
+<button onclick="confirmarPedido()" style="width:100%;height:52px;margin-top:8px;background:#ef4444;color:#fff;border:none;border-radius:12px;font-weight:800;display:flex;align-items:center;justify-content:center;gap:6px">
 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><line x1="22" y1="11" x2="12" y2="11"/><polyline points="15 8 22 11 15 14"/><path d="M21 12a9 9 0 1 1-9-9"/></svg> CONFIRMAR SERVICIO
 </button>
 </div>
@@ -124,10 +131,10 @@ body{background:#f8f9fb;color:#0a0a0a;overflow-x:hidden;padding-bottom:90px}
 <div id="formAliadoComprar" style="display:none">
 <div class="form-section" style="background:#f0fdf4;border-color:#86efac">
 <div class="form-section-title">Aliado - Compra</div>
-<div class="label">Productos que se va a comprar</div>
+<div class="label">Productos que se va a comprar (texto libre)</div>
 <div class="wrap"><input type="text" id="queComprarProductos" placeholder="Ej: 2 cocas, pan..."><button class="clear-x" onclick="document.getElementById('queComprarProductos').value=''">x</button></div>
-<div class="label">Tienda donde se va a comprar</div>
-<div class="wrap"><input type="text" id="queComprar" placeholder="Ej: Oxxo, Bodega..."><button class="clear-x" onclick="document.getElementById('queComprar').value=''; compraOrigenCoords=null">x</button></div>
+<div class="label">Tienda donde se va a comprar (texto libre)</div>
+<div class="wrap"><input type="text" id="queComprar" placeholder="Ej: Fruteria Lupita"><button class="clear-x" onclick="document.getElementById('queComprar').value=''; compraOrigenCoords=null">x</button></div>
 <div class="label">Direccion (opcional)</div>
 <div class="wrap"><input type="text" id="entregaDirComprar" placeholder="Direccion entrega opcional..."><button class="clear-x" onclick="document.getElementById('entregaDirComprar').value=''; compraEntregaCoords=null">x</button></div>
 <div class="label">Aliado a entregar / Cliente de entrega</div>
@@ -136,9 +143,11 @@ body{background:#f8f9fb;color:#0a0a0a;overflow-x:hidden;padding-bottom:90px}
 <div class="tiempo-box"><div class="label" style="margin:0 0 6px">Tiempo para ir a comprar</div><div style="display:flex;gap:4px"><button onclick="setTiempoCompra(15)" id="tc15" class="tab-cobro active" style="flex:1;background:#0a0a0a;color:#fff">15</button><button onclick="setTiempoCompra(30)" id="tc30" class="tab-cobro" style="flex:1">30</button><button onclick="setTiempoCompra(45)" id="tc45" class="tab-cobro" style="flex:1">45</button></div><div class="wrap" style="margin-top:6px"><input type="number" id="tiempoCompraInput" value="15"></div></div>
 <div class="manual-price"><div class="label">Precio manual (opcional)</div><div class="wrap" style="background:#fff"><input type="number" id="precioManualAliadoComprar" placeholder="Ej: 60"><button class="clear-x" onclick="document.getElementById('precioManualAliadoComprar').value=''">x</button></div></div>
 </div>
-<button onclick="confirmarPedidoCompra()" style="width:100%;height:52px;margin-top:12px;background:#ef4444;color:#fff;border:none;border-radius:12px;font-weight:800;display:flex;align-items:center;justify-content:center;gap:6px">
-<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><line x1="22" y1="11" x2="12" y2="11"/><polyline points="15 8 22 11 15 14"/><path d="M21 12a9 9 0 1 1-9-9"/></svg> CONFIRMAR SERVICIO
-</button>
+<div style="display:flex;gap:6px;margin-top:12px">
+<button onclick="compartirCotizacionCliente()" class="btn-cot-cli">📤 COTIZACION CLIENTE</button>
+<button onclick="compartirCotizacionRepa()" class="btn-cot-repa">🏍️ COTIZACION REPA</button>
+</div>
+<button onclick="confirmarPedidoCompra()" style="width:100%;height:52px;margin-top:8px;background:#ef4444;color:#fff;border:none;border-radius:12px;font-weight:800;display:flex;align-items:center;justify-content:center;gap:6px">CONFIRMAR SERVICIO</button>
 </div>
 
 <div id="formNuevoRecoger" style="display:none">
@@ -155,25 +164,29 @@ body{background:#f8f9fb;color:#0a0a0a;overflow-x:hidden;padding-bottom:90px}
 <div class="tiempo-box"><div class="label" style="margin:0 0 6px">Tiempo de recogida</div><div style="display:flex;gap:4px"><button onclick="setTiempoRecogida(10)" id="t10n" class="tab-cobro" style="flex:1">10</button><button onclick="setTiempoRecogida(20)" id="t20n" class="tab-cobro active" style="flex:1;background:#0a0a0a;color:#fff">20</button><button onclick="setTiempoRecogida(30)" id="t30n" class="tab-cobro" style="flex:1">30</button><button onclick="setTiempoRecogida(45)" id="t45n" class="tab-cobro" style="flex:1">45</button><button onclick="setTiempoRecogida(60)" id="t60n" class="tab-cobro" style="flex:1">60</button></div></div>
 <div class="manual-price"><div class="label">Precio manual (opcional)</div><div class="wrap" style="background:#fff"><input type="number" id="precioManualNuevoRecoger" placeholder="Ej: 50"><button class="clear-x" onclick="document.getElementById('precioManualNuevoRecoger').value=''">x</button></div></div>
 </div>
-<button onclick="confirmarPedidoNuevoRecoger()" style="width:100%;height:52px;margin-top:12px;background:#0a0a0a;color:#fff;border:none;border-radius:12px;font-weight:800;display:flex;align-items:center;justify-content:center;gap:6px">
-<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><line x1="22" y1="11" x2="12" y2="11"/><polyline points="15 8 22 11 15 14"/><path d="M21 12a9 9 0 1 1-9-9"/></svg> CONFIRMAR SERVICIO
-</button>
+<div style="display:flex;gap:6px;margin-top:12px">
+<button onclick="compartirCotizacionCliente()" class="btn-cot-cli">📤 COTIZACION CLIENTE</button>
+<button onclick="compartirCotizacionRepa()" class="btn-cot-repa">🏍️ COTIZACION REPA</button>
+</div>
+<button onclick="confirmarPedidoNuevoRecoger()" style="width:100%;height:52px;margin-top:8px;background:#0a0a0a;color:#fff;border:none;border-radius:12px;font-weight:800;display:flex;align-items:center;justify-content:center;gap:6px">CONFIRMAR SERVICIO</button>
 </div>
 
 <div id="formNuevoComprar" style="display:none">
 <div style="background:#fff7ed;border:1px solid #fed7aa;border-radius:10px;padding:8px;margin-bottom:8px">
 <div class="form-section-title">Cliente nuevo - Compra</div>
 <div class="label">Nombre cliente nuevo</div><div class="wrap"><input type="text" id="nombreClienteNuevoCompra" placeholder="Cliente nuevo"><button class="clear-x" onclick="document.getElementById('nombreClienteNuevoCompra').value=''">x</button></div>
-<div class="label">Productos</div><div class="wrap"><input type="text" id="queComprarProductosNuevo" placeholder="Que comprar..."><button class="clear-x" onclick="document.getElementById('queComprarProductosNuevo').value=''">x</button></div>
-<div class="label">Donde comprar</div><div class="wrap"><input type="text" id="queComprarNuevo" placeholder="Tienda..."><button class="clear-x" onclick="document.getElementById('queComprarNuevo').value=''">x</button></div>
+<div class="label">Productos (texto libre)</div><div class="wrap"><input type="text" id="queComprarProductosNuevo" placeholder="Que comprar..."><button class="clear-x" onclick="document.getElementById('queComprarProductosNuevo').value=''">x</button></div>
+<div class="label">Donde comprar (texto libre)</div><div class="wrap"><input type="text" id="queComprarNuevo" placeholder="Tienda..."><button class="clear-x" onclick="document.getElementById('queComprarNuevo').value=''">x</button></div>
 <div class="label">Direccion entrega cliente nuevo</div><div class="wrap"><input type="text" id="entregaDirComprarNuevo" placeholder="Direccion entrega..."><button class="clear-x" onclick="document.getElementById('entregaDirComprarNuevo').value=''">x</button></div>
 <div class="label">Telefono entrega</div><div class="wrap"><input type="tel" id="telefonoEntregaCompraNuevo" placeholder="Tel"><button class="clear-x" onclick="document.getElementById('telefonoEntregaCompraNuevo').value=''">x</button></div>
 <div class="tiempo-box"><div class="label" style="margin:0 0 6px">Tiempo para ir a comprar</div><div style="display:flex;gap:4px"><button onclick="setTiempoCompra(15)" id="tc15n" class="tab-cobro active" style="flex:1;background:#0a0a0a;color:#fff">15</button><button onclick="setTiempoCompra(30)" id="tc30n" class="tab-cobro" style="flex:1">30</button><button onclick="setTiempoCompra(45)" id="tc45n" class="tab-cobro" style="flex:1">45</button></div></div>
 <div class="manual-price"><div class="label">Precio manual (opcional)</div><div class="wrap" style="background:#fff"><input type="number" id="precioManualNuevoComprar" placeholder="Ej: 60"><button class="clear-x" onclick="document.getElementById('precioManualNuevoComprar').value=''">x</button></div></div>
 </div>
-<button onclick="confirmarPedidoNuevoComprar()" style="width:100%;height:52px;margin-top:12px;background:#0a0a0a;color:#fff;border:none;border-radius:12px;font-weight:800;display:flex;align-items:center;justify-content:center;gap:6px">
-<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><line x1="22" y1="11" x2="12" y2="11"/><polyline points="15 8 22 11 15 14"/><path d="M21 12a9 9 0 1 1-9-9"/></svg> CONFIRMAR SERVICIO
-</button>
+<div style="display:flex;gap:6px;margin-top:12px">
+<button onclick="compartirCotizacionCliente()" class="btn-cot-cli">📤 COTIZACION CLIENTE</button>
+<button onclick="compartirCotizacionRepa()" class="btn-cot-repa">🏍️ COTIZACION REPA</button>
+</div>
+<button onclick="confirmarPedidoNuevoComprar()" style="width:100%;height:52px;margin-top:8px;background:#0a0a0a;color:#fff;border:none;border-radius:12px;font-weight:800;display:flex;align-items:center;justify-content:center;gap:6px">CONFIRMAR SERVICIO</button>
 </div>
 </div>
 </div>
@@ -199,7 +212,27 @@ let map=null, dirServ=null, dirRend=null, geocoder=null, markers=[], clientePedi
 window.cerrarSesionKigo=function(){ confirmarAccion('¿Cerrar sesión y volver al login?', 'Cerrar sesión', ()=>{ localStorage.clear(); sessionStorage.clear(); window.location.href = 'https://iian-dc.github.io/Kigoxpress/login/'; }, 'Si, salir', ''); }
 function calcularHoraRecogida(min){ let ahora=new Date(); ahora.setMinutes(ahora.getMinutes()+parseInt(min||20)); let h=ahora.getHours(); let m=String(ahora.getMinutes()).padStart(2,'0'); let ampm=h>=12?'PM':'AM'; let h12=h%12||12; return {texto:`RECOGER ${h12}:${m} ${ampm}`, iso:ahora.toISOString()}; }
 function initMapReal(){ if(!window.google||!google.maps){ setTimeout(initMapReal,400); return; } if(!geocoder) geocoder=new google.maps.Geocoder(); if(!map){ map=new google.maps.Map(document.getElementById('map'),{center:{lat:21.1556,lng:-100.9343},zoom:14}); dirServ=new google.maps.DirectionsService(); dirRend=new google.maps.DirectionsRenderer({suppressMarkers:true,map:map,polylineOptions:{strokeColor:'#10b981',strokeWeight:5}}); } initPlaces(); }
-function initPlaces(){ if(!window.google||!google.maps.places){ setTimeout(initPlaces,600); return; } let opts={componentRestrictions:{country:'mx'}}; let ids=['direccionRecogidaManual','entregaDirRecoger','entregaDirComprar','queComprar','entregaDirNuevoRecoger','queComprarNuevo','entregaDirComprarNuevo','queComprarProductosNuevo']; ids.forEach(id=>{ let el=document.getElementById(id); if(el&&!el.dataset.ac){ let ac=new google.maps.places.Autocomplete(el, opts); ac.addListener('place_changed',()=>{ let place=ac.getPlace(); if(place.geometry){ let coords={lat:place.geometry.location.lat(),lng:place.geometry.location.lng()}; if(id.includes('Recogida')||id==='direccionRecogidaManual'){ recogidaCoordsTemp=coords; } if(id.toLowerCase().includes('entrega')){ entregaCoordsTemp=coords; } if(id.includes('queComprar')){ compraOrigenCoords=coords; } intentarAutoRuta(); intentarAutoRutaCompra(); } }); el.dataset.ac='1'; } }); }
+function initPlaces(){
+  if(!window.google||!google.maps.places){ setTimeout(initPlaces,600); return; }
+  let opts={componentRestrictions:{country:'mx'}};
+  let ids=['direccionRecogidaManual','entregaDirRecoger','entregaDirComprar','entregaDirNuevoRecoger','entregaDirComprarNuevo'];
+  ids.forEach(id=>{
+    let el=document.getElementById(id);
+    if(el&&!el.dataset.ac){
+      let ac=new google.maps.places.Autocomplete(el, opts);
+      ac.addListener('place_changed',()=>{
+        let place=ac.getPlace();
+        if(place.geometry){
+          let coords={lat:place.geometry.location.lat(),lng:place.geometry.location.lng()};
+          if(id.includes('Recogida')||id==='direccionRecogidaManual'){ recogidaCoordsTemp=coords; }
+          if(id.toLowerCase().includes('entrega')){ entregaCoordsTemp=coords; if(id==='entregaDirComprar') compraEntregaCoords=coords; if(id==='entregaDirComprarNuevo') compraEntregaCoords=coords; }
+          intentarAutoRuta(); intentarAutoRutaCompra();
+        }
+      });
+      el.dataset.ac='1';
+    }
+  });
+}
 function intentarAutoRuta(){ if(!recogidaCoordsTemp||!entregaCoordsTemp) return; dirServ.route({origin:recogidaCoordsTemp, destination:entregaCoordsTemp, travelMode:'DRIVING'},(r,s)=>{ if(s==='OK'){ dirRend.setDirections(r); dirRend.setMap(map); let leg=r.routes[0].legs[0]; let km=(leg.distance.value/1000).toFixed(1); let costo=calcularCostoPorKm(km); document.getElementById('infoRuta').style.display='block'; document.getElementById('infoRuta').innerHTML=`VALOR: $${costo} | ${km}km`; ultimaCotizacion={cliente:clientePedidoSeleccionado||'Cliente', km:km, lat1:recogidaCoordsTemp.lat, lng1:recogidaCoordsTemp.lng, lat2:entregaCoordsTemp.lat, lng2:entregaCoordsTemp.lng, costoSugerido:costo}; document.getElementById('botonesDespuesCotizar').style.display='flex'; } }); }
 function intentarAutoRutaCompra(){ if(!compraOrigenCoords||!compraEntregaCoords){ if(compraOrigenCoords) recogidaCoordsTemp=compraOrigenCoords; if(compraEntregaCoords) entregaCoordsTemp=compraEntregaCoords; if(recogidaCoordsTemp&&entregaCoordsTemp) intentarAutoRuta(); return; } dirServ.route({origin:compraOrigenCoords, destination:compraEntregaCoords, travelMode:'DRIVING'},(r,s)=>{ if(s==='OK'){ dirRend.setDirections(r); dirRend.setMap(map); let leg=r.routes[0].legs[0]; let km=(leg.distance.value/1000).toFixed(1); let costo=calcularCostoCompra(km); document.getElementById('infoRuta').style.display='block'; document.getElementById('infoRuta').innerHTML=`COMPRA: $${costo} | ${km}km`; ultimaCotizacion={cliente:'Compra', km:km, lat1:compraOrigenCoords.lat, lng1:compraOrigenCoords.lng, lat2:compraEntregaCoords.lat, lng2:compraEntregaCoords.lng, costoSugerido:costo, esCompra:true}; document.getElementById('botonesDespuesCotizar').style.display='flex'; } }); }
 function calcularCostoPorKm(km){ let k=parseFloat(km); if(isNaN(k)) return tarifasKmConfig.centroTarifa; let cfg=tarifasKmConfig; if(k<=cfg.centroRadio) return cfg.centroTarifa; let costo=cfg.centroTarifa + (k-cfg.centroRadio)*cfg.porKm; if(k>=cfg.lejosRadio) costo+=cfg.lejosExtra; return Math.round(costo); }
@@ -245,7 +278,38 @@ window.buscarClienteCompra=function(){ let input=document.getElementById('buscad
 window.seleccionarClienteCompra=async function(nombre){ clienteCompraSeleccionado=nombre; document.getElementById('buscadorClienteCompra').value=nombre; document.getElementById('listClienteCompra').style.display='none'; let dir=clientesDirecciones[nombre]; let box=document.getElementById('clienteCompraSeleccionado'); box.style.display='block'; box.innerHTML=`<div style="display:flex;justify-content:space-between"><div><b style="font-size:10px">${nombre}</b><br><span style="font-size:9px;color:#374151">${dir?`${dir.direccion}`:'Sin direccion'}</span></div><button onclick="limpiarClienteCompra()" style="background:#fff;border:1px solid #e5e7eb;border-radius:6px;padding:3px 6px;font-size:8px">X</button></div>`; if(dir&&dir.direccion) document.getElementById('entregaDirComprar').value=dir.direccion; if(dir&&dir.lat&&dir.lng){ compraEntregaCoords={lat:dir.lat,lng:dir.lng}; entregaCoordsTemp=compraEntregaCoords; intentarAutoRutaCompra(); } else if(dir){ let c=await geo(dir.direccion); if(c){ compraEntregaCoords=c; entregaCoordsTemp=c; intentarAutoRutaCompra(); } } };
 window.limpiarClienteCompra=function(){ clienteCompraSeleccionado=null; compraEntregaCoords=null; document.getElementById('buscadorClienteCompra').value=''; document.getElementById('clienteCompraSeleccionado').style.display='none'; document.getElementById('listClienteCompra').style.display='none'; document.getElementById('entregaDirComprar').value=''; };
 function todayISO(){ let d=new Date(); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
-window.enviarCotizacionCliente=function(){ if(!ultimaCotizacion) return mostrarAviso('Cotiza primero','Falta'); let c=ultimaCotizacion; let mensaje = `KIGO XPRESS - COTIZACION\n\nRECOGIDA: ${c.dirRecogida}\nENTREGA: ${c.entrega}\nDistancia: ${c.km} km\n\nValor: $${c.costoSugerido}`; window.open(`https://wa.me/?text=${encodeURIComponent(mensaje)}`,'_blank'); };
+window.getDatosCotizacionActual=function(){
+  let precioManualAliadoRec = parseInt(document.getElementById('precioManualAliadoRecoger')?.value)||0;
+  let precioManualAliadoComp = parseInt(document.getElementById('precioManualAliadoComprar')?.value)||0;
+  let precioManualNuevoRec = parseInt(document.getElementById('precioManualNuevoRecoger')?.value)||0;
+  let precioManualNuevoComp = parseInt(document.getElementById('precioManualNuevoComprar')?.value)||0;
+  let precio = 0;
+  if(tipoClienteActual==='aliados' && tipoServicioActual==='recoger') precio = precioManualAliadoRec||ultimaCotizacion?.costoSugerido||30;
+  if(tipoClienteActual==='aliados' && tipoServicioActual==='comprar') precio = precioManualAliadoComp||ultimaCotizacion?.costoSugerido||42;
+  if(tipoClienteActual==='nuevos' && tipoServicioActual==='recoger') precio = precioManualNuevoRec||ultimaCotizacion?.costoSugerido||30;
+  if(tipoClienteActual==='nuevos' && tipoServicioActual==='comprar') precio = precioManualNuevoComp||ultimaCotizacion?.costoSugerido||42;
+  let km = ultimaCotizacion?.km||'--';
+  let repa = document.getElementById('pedidoRepaDestino')?.value||'';
+  let tiempo = tipoServicioActual==='comprar'? tiempoCompraMin : tiempoRecogidaMin;
+  let clienteTxt = clientePedidoSeleccionado||clienteCompraSeleccionado||document.getElementById('nombreClienteNuevo')?.value||document.getElementById('nombreClienteNuevoCompra')?.value||'Cliente';
+  let recogidaTxt = document.getElementById('direccionRecogidaManual')?.value||clientesDirecciones[clientePedidoSeleccionado]?.direccion||document.getElementById('queComprar')?.value||document.getElementById('queComprarNuevo')?.value||'Recogida';
+  let entregaTxt = document.getElementById('entregaDirRecoger')?.value||document.getElementById('entregaDirComprar')?.value||document.getElementById('entregaDirNuevoRecoger')?.value||document.getElementById('entregaDirComprarNuevo')?.value||'Entrega';
+  let productos = document.getElementById('queComprarProductos')?.value||document.getElementById('queComprarProductosNuevo')?.value||'';
+  return {precio, km, repa, tiempo, clienteTxt, recogidaTxt, entregaTxt, productos};
+}
+window.compartirCotizacionCliente=function(){
+  let d = getDatosCotizacionActual();
+  if(!d.precio) return mostrarAviso('Cotiza primero o pon precio manual','Falta');
+  let msg = `🟢 *KIGO XPRESS - COTIZACION CLIENTE* 🟢\n\n👤 Cliente: ${d.clienteTxt}\n${d.productos? '📦 Productos: '+d.productos+'\n':''}📍 Recogida: ${d.recogidaTxt}\n🏠 Entrega: ${d.entregaTxt}\n📏 Distancia: ${d.km} km\n⏱️ Tiempo recogida: ${d.tiempo} min\n💰 *Valor servicio: $${d.precio}*\n\n¿Confirmamos?`;
+  window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`,'_blank');
+}
+window.compartirCotizacionRepa=function(){
+  let d = getDatosCotizacionActual();
+  if(!d.precio) return mostrarAviso('Cotiza primero o pon precio manual','Falta');
+  let msg = `🏍️ *KIGO XPRESS - SERVICIO PARA REPA* 🏍️\n\n👤 Repa asignado: ${d.repa}\n👤 Cliente: ${d.clienteTxt}\n${d.productos? '📦 Productos: '+d.productos+'\n':''}📍 Recogida: ${d.recogidaTxt}\n🏠 Entrega: ${d.entregaTxt}\n📏 ${d.km} km | ⏱️ ${d.tiempo} min\n💰 Valor: $${d.precio}\n\nConfirma si puedes tomarlo.`;
+  window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`,'_blank');
+}
+window.enviarCotizacionCliente=function(){ compartirCotizacionCliente(); };
 window.restaurarCotizacion=function(){ limpiarTodosLosFormularios(); };
 window.confirmarPedido=async function(){
   let precioManual = parseInt(document.getElementById('precioManualAliadoRecoger')?.value)||0;
